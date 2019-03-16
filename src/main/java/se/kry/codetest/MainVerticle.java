@@ -4,25 +4,26 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class MainVerticle extends AbstractVerticle {
 
-  private HashMap<String, String> services = new HashMap<>();
+  private HashMapDatabase hmDb = new HashMapDatabase();
   private BackgroundPoller poller = new BackgroundPoller();
 
   @Override
   public void start(Future<Void> startFuture) {
     Router router = Router.router(vertx);
     router.route().handler(BodyHandler.create());
-    services.put("https://www.kry.se", "UNKNOWN");
-    vertx.setPeriodic(1000 * 60, timerId -> poller.pollServices(services));
+//    services.put("https://www.kry.se", "UNKNOWN");
+//    vertx.setPeriodic(1000 * 60, timerId -> poller.pollServices(services));
     setRoutes(router);
     vertx
         .createHttpServer()
@@ -39,26 +40,41 @@ public class MainVerticle extends AbstractVerticle {
 
   private void setRoutes(Router router){
     router.route("/").handler(StaticHandler.create());
-    router.get("/service").handler(req -> {
-      List<JsonObject> jsonServices = services
-          .entrySet()
-          .stream()
-          .map(service ->
-              new JsonObject()
-                  .put("name", service.getKey())
-                  .put("status", service.getValue()))
-          .collect(Collectors.toList());
-      req.response()
-          .putHeader("content-type", "application/json")
-          .end(new JsonArray(jsonServices).encode());
-    });
-    router.post("/service").handler(req -> {
-      JsonObject jsonBody = req.getBodyAsJson();
-      services.put(jsonBody.getString("url"), "UNKNOWN");
-      req.response()
-          .putHeader("content-type", "text/plain")
-          .end("OK");
-    });
+    router.get("/service").handler(this::getServices);
+    router.post("/service").handler(this::addService);
+    router.delete("/service/:id").handler(this::removeService);
+  }
+
+  private void getServices(RoutingContext context) {
+    List<JsonObject> jsonServices = hmDb.getAll()
+            .stream()
+            .map(service -> service.toJsonObject())
+            .collect(Collectors.toList());
+    context.response()
+            .putHeader("content-type", "application/json")
+            .end(new JsonArray(jsonServices).encode());
+  }
+
+  private void addService(RoutingContext context) {
+    System.out.println("Add new service");
+    JsonObject jsonBody = context.getBodyAsJson();
+    String url = jsonBody.getString("url");
+    hmDb.save(url);
+    context.response()
+            .setStatusCode(201)
+            .putHeader("content-type", "text/plain")
+            .end("OK");
+  }
+
+  private void removeService(RoutingContext context) {
+    System.out.println("Delete service");
+    String id = context.request().getParam("id");
+    if (id == null) {
+      context.response().setStatusCode(400).end();
+    } else {
+      hmDb.delete(id);
+      context.response().setStatusCode(204).end();
+    }
   }
 
 }
