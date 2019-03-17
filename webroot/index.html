@@ -2,15 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Welcome to KRY</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <body>
-KRY status poller
-<ul id="service-list">
-</ul>
-<input type="text" id="url-name">
-<button id="post-service">Save</button>
-
+<nav class="navbar navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">
+        KRY Status Poller
+    </a>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <form>
+                <div class="form-group">
+                    <input type="url" class="form-control" id="url-name" aria-describedby="urlHelp" placeholder="Enter URL" required>
+                    <small id="urlHelp" class="form-text text-muted">Add the URL to monitor</small>
+                    <div class="invalid-feedback">
+                        Please provide a valid URL.
+                    </div>
+                </div>
+                <button class="btn btn-primary" type="submit" id="post-service">Submit</button>
+            </form>
+        </div>
+    </div>
+    <ul id="service-list" class="list-group"></ul>
+</div>
 </body>
 <script src="/static/js/script.js"></script>
 </html>

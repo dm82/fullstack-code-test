@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class MainVerticle extends AbstractVerticle {
 
-  private HashMapDatabase hmDb = new HashMapDatabase();
+  private Database db = new HashMapDatabase();
   private BackgroundPoller poller = new BackgroundPoller();
 
   @Override
@@ -47,7 +47,8 @@ public class MainVerticle extends AbstractVerticle {
   }
 
   private void getServices(RoutingContext context) {
-    List<JsonObject> jsonServices = hmDb.getAll()
+    System.out.println("Get all services");
+    List<JsonObject> jsonServices = db.getAll()
             .stream()
             .map(service -> service.toJsonObject())
             .collect(Collectors.toList());
@@ -61,7 +62,7 @@ public class MainVerticle extends AbstractVerticle {
     JsonObject jsonBody = context.getBodyAsJson();
     String url = jsonBody.getString("url");
     if (Service.isValidURL(url)) {
-      hmDb.save(new Service(url));
+      db.save(new Service(url));
       context.response()
               .setStatusCode(201)
               .putHeader("content-type", "text/plain")
@@ -77,7 +78,7 @@ public class MainVerticle extends AbstractVerticle {
     if (id == null) {
       context.response().setStatusCode(400).end();
     } else {
-      hmDb.delete(id);
+      db.delete(id);
       context.response().setStatusCode(204).end();
     }
   }
