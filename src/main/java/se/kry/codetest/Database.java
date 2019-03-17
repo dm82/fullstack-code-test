@@ -5,7 +5,7 @@ import java.util.List;
 public interface Database {
     List<Service> getAll();
 
-    String save(String url);
+    void save(Service service);
 
     void delete(String id);
 }

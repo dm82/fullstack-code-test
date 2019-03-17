@@ -19,11 +19,8 @@ public class HashMapDatabase implements Database {
     }
 
     @Override
-    public String save(String url) {
-        Service service = new Service(url);
-        String id = service.getId();
-        services.put(id, service);
-        return id;
+    public void save(Service service) {
+        services.put(service.getId(), service);
     }
 
     @Override

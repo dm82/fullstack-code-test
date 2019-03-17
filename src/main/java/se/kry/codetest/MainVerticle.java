@@ -40,6 +40,7 @@ public class MainVerticle extends AbstractVerticle {
 
   private void setRoutes(Router router){
     router.route("/").handler(StaticHandler.create());
+    router.route("/static/*").handler(StaticHandler.create());
     router.get("/service").handler(this::getServices);
     router.post("/service").handler(this::addService);
     router.delete("/service/:id").handler(this::removeService);
@@ -59,11 +60,15 @@ public class MainVerticle extends AbstractVerticle {
     System.out.println("Add new service");
     JsonObject jsonBody = context.getBodyAsJson();
     String url = jsonBody.getString("url");
-    hmDb.save(url);
-    context.response()
-            .setStatusCode(201)
-            .putHeader("content-type", "text/plain")
-            .end("OK");
+    if (Service.isValidURL(url)) {
+      hmDb.save(new Service(url));
+      context.response()
+              .setStatusCode(201)
+              .putHeader("content-type", "text/plain")
+              .end("OK");
+    } else {
+      context.response().setStatusCode(400).end();
+    }
   }
 
   private void removeService(RoutingContext context) {
