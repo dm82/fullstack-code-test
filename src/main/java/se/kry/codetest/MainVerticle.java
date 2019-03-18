@@ -24,7 +24,7 @@ public class MainVerticle extends AbstractVerticle {
   public void start(Future<Void> startFuture) {
     Router router = Router.router(vertx);
     router.route().handler(BodyHandler.create());
-    vertx.setPeriodic(1000, timerId -> {
+    vertx.setPeriodic(60 * 1000, timerId -> {
       poller.pollServices(this.db);
     });
     setRoutes(router);

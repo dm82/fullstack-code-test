@@ -1,33 +1,52 @@
-# KRY code assignment
+# Service Poller
 
-One of our developers built a simple service poller.
-The service consists of a backend service written in Vert.x (https://vertx.io/) that keeps a list of services (defined by a URL), and periodically does a HTTP GET to each and saves the response ("OK" or "FAIL").
+## Description
 
-Unfortunately, the original developer din't finish the job, and it's now up to you to complete the thing.
-In the backlog are the following issues:
+This is a gradle project that builds a simple service poller using Vertx.x (https://vertx.io/).
+It keeps a list of services (defined by a URL), and periodically does a HTTP GET to each and saves the response ("OK" or "FAIL")
 
-- Whenever the server is restarted, any added services disappear
-- Service URL's are not validated in any way ("sdgf" is _not_ up)
-- There's no way to delete individual services
-- The poller doesn't actually work
-- The frontend is really ugly, and not fully functional
-- Simultaneous writes sometimes causes strange behavior
-- There's only one test and it only tests the GET endpoint
+## Run the application
 
-Spend maximum four hours working on these issues - make sure to finish the ones you start.
+When the application is built, you can run the application directly from the command line:
 
-Put the code in a git repo on GitHub and send us the link (niklas.holmqvist@kry.se) when you are done.
+    ./gradlew clean run
 
-Good luck!
+The application starts a server on `localhost:8080`.
 
-# Building
-We recommend using IntelliJ as it's what we use day to day at the KRY office.
-In intelliJ, choose
-```
-New -> New from existing sources -> Import project from external model -> Gradle
-```
+## API
 
-You can also run gradle directly from the command line:
-```
-./gradlew clean run
-```
+### Get all services
+
+    curl http://localhost:8080/service
+
+### Add a service
+
+    curl -X POST http://localhost:8080/service -d '{"url": "https://kry.se"}'
+
+### Delete a service
+
+    curl -X DELETE http://localhost:8080/service/:id
+
+## Available Databases
+
+Three different databases are available:
+
+- HashMapDatabase: an in memory store
+- FileDatabase: a persistent store which uses a file behind the scenes
+- MongoDatabase: a persistent store using MongoDB (incomplete, see comments in the MongoDatabase class)
+
+To switch between databases, go to the MainVerticle class and uncomment the respective line, for example:
+
+    private Database db = new FileDatabase();
+
+### Notes about MongoDatabase
+
+Before you can use the MongoDatabase backend, you need to run a dockerized version of MongoDB:
+
+    docker run -d -p 27017:27017 mongo
+
+## Tests
+
+To run the tests:
+
+    ./gradlew clean test
