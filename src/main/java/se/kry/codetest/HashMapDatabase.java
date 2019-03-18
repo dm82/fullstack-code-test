@@ -27,4 +27,9 @@ public class HashMapDatabase implements Database {
     public void delete(String id) {
         services.remove(id);
     }
+
+    @Override
+    public void reset() {
+        this.services = new HashMap<>();
+    }
 }

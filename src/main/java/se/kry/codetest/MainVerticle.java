@@ -14,8 +14,11 @@ import java.util.stream.Collectors;
 
 public class MainVerticle extends AbstractVerticle {
 
-  private Database db = new HashMapDatabase();
   private BackgroundPoller poller = new BackgroundPoller();
+
+  private Database db = new FileDatabase();
+  // private Database db = new HashMapDatabase();
+  // private Database db = new MongoDatabase();
 
   @Override
   public void start(Future<Void> startFuture) {
@@ -24,7 +27,6 @@ public class MainVerticle extends AbstractVerticle {
     vertx.setPeriodic(1000, timerId -> {
       poller.pollServices(this.db);
     });
-
     setRoutes(router);
     vertx
         .createHttpServer()
@@ -85,6 +87,10 @@ public class MainVerticle extends AbstractVerticle {
     }
   }
 
+  // Convenience method to cleanup the database
+  public void resetDatabase() {
+    this.db.reset();
+  }
 }
 
 

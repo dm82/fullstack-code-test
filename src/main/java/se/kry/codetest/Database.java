@@ -8,4 +8,6 @@ public interface Database {
     void save(Service service);
 
     void delete(String id);
+
+    void reset();
 }
