@@ -4,7 +4,6 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -50,13 +49,14 @@ public class MainVerticle extends AbstractVerticle {
 
   private void getServices(RoutingContext context) {
     System.out.println("Get all services");
-    List<JsonObject> jsonServices = db.getAll()
+    List<Service> services = db.getAll();
+    List<JsonObject> jsonObjects = services
             .stream()
             .map(service -> service.toJsonObject())
             .collect(Collectors.toList());
-    context.response()
+      context.response()
             .putHeader("content-type", "application/json")
-            .end(new JsonArray(jsonServices).encode());
+            .end(new JsonArray(jsonObjects).encode());
   }
 
   private void addService(RoutingContext context) {

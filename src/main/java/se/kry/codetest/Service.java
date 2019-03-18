@@ -22,6 +22,12 @@ public class Service {
         this.status = status;
     }
 
+    public Service(JsonObject jsonObject) {
+        this.id = jsonObject.getString("id");
+        this.URL = jsonObject.getString("url");
+        this.status = jsonObject.getString("status");
+    }
+
     private String getUniqueIdentifier() {
         return UUID.randomUUID().toString();
     }
@@ -40,14 +46,6 @@ public class Service {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public static Service fromJsonObject(JsonObject jsonObject) {
-        String id = jsonObject.getString("id");
-        String url = jsonObject.getString("url");
-        String status = jsonObject.getString("status");
-        Service service = new Service(id, url, status);
-        return service;
     }
 
     public JsonObject toJsonObject(){

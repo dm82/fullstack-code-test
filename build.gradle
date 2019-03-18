@@ -33,6 +33,8 @@ dependencies {
   testImplementation "io.vertx:vertx-junit5:$vertxVersion"
   testRuntime("org.junit.jupiter:junit-jupiter-engine:$junitJupiterEngineVersion")
   compile 'commons-validator:commons-validator:1.6'
+  compile 'io.vertx:vertx-mongo-client:3.6.3'
+  compile 'io.vertx:vertx-sync:3.6.3'
 }
 
 
